@@ -36,17 +36,18 @@ module Jekyll
         #loop through posts to find match and get slug
         context.registers[:site].posts.each do |post|
           if post.id == page["id"]
-            path = "/posts/#{post.slug}"
+            path = "posts/#{post.slug}"
           end
         end
       else
-        path = page["url"].sub(/\/$/, "")
+        path = page["url"]
       end
 
       #strip filename
       path = File.dirname(path) if path =~ /\.\w+$/
 
-      "/assets#{path}/#{@filename}"
+      #fix double slashes
+      "/assets/#{path}/#{@filename}".gsub(/\/{2,}/, '/')
     end
   end
 end
