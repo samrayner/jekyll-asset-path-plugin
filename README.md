@@ -28,5 +28,23 @@ Useful for images and links in Markdown or HTML:
 <img src="{% asset_path my-image.png %}" alt="My Image" />
 ```
 
+Given file _data/image.csv contains:
+```csv
+file
+image_one.png
+image_two.png
+```
+and post 2015-03-21-another-post-title contains:
+```liquid
+{% for image in site.data.images %}
+  {% asset_path {{ image.file }} %}
+{% endfor %}
+```
+then the tag will output:
+```text
+/assets/posts/another-post-title/image_one.png
+/assets/posts/another-post-title/image_two.png
+```
+
 [j]: http://jekyllrb.com/
 [o]: http://octopress.org/
