@@ -53,9 +53,9 @@ module Jekyll
       #if a post
       if page["id"]
         #loop through posts to find match and get slug
-        context.registers[:site].posts.each do |post|
+        context.registers[:site].posts.docs.each do |post|
           if post.id == page["id"]
-            path = "posts/#{post.slug}"
+            path = "posts/#{post.data['slug']}"
           end
         end
       else
