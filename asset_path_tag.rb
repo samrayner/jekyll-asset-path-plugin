@@ -52,10 +52,20 @@ module Jekyll
 
       #if a post
       if page["id"]
-        #loop through posts to find match and get slug
-        context.registers[:site].posts.docs.each do |post|
-          if post.id == page["id"]
-            path = "posts/#{post.data['slug']}"
+        #check for Jekyll version
+        if Jekyll::VERSION < '3.0.0'
+          #loop through posts to find match and get slug
+          context.registers[:site].posts.each do |post|
+            if post.id == page["id"]
+              path = "posts/#{post.slug}"
+            end
+          end
+        else
+        #loop through posts to find match and get slug, method calls for Jekyll 3
+          context.registers[:site].posts.docs.each do |post|
+            if post.id == page["id"]
+              path = "posts/#{post.data['slug']}"
+            end
           end
         end
       else
