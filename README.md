@@ -1,6 +1,8 @@
 Jekyll Asset Path Tag
 =====================
 
+<img src="https://raw.githubusercontent.com/samrayner/jekyll-asset-path-plugin/master/icon.png" width="150" alt="Jekyll Asset Path Plugin" />
+
 A liquid tag to output a relative URL for assets based on the post or page, allowing you to organise your assets into subdirectories.
 
 Syntax: `{% asset_path [filename] %}`
