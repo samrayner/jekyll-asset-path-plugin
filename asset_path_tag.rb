@@ -27,6 +27,28 @@
 #
 
 module Jekyll
+
+  def self.get_post_path(page_id, posts)
+    #check for Jekyll version
+    if Jekyll::VERSION < '3.0.0'
+      #loop through posts to find match and get slug
+      posts.each do |post|
+        if post.id == page_id
+          return "posts/#{post.slug}"
+        end
+      end
+    else
+      #loop through posts to find match and get slug, method calls for Jekyll 3
+      posts.docs.each do |post|
+        if post.id == page_id
+          return "posts/#{post.data['slug']}"
+        end
+      end
+    end
+
+    return ""
+  end
+
   class AssetPathTag < Liquid::Tag
     @markup = nil
 
@@ -47,27 +69,12 @@ module Jekyll
       #strip leading and trailing quotes
       filename = rawFilename.gsub(/^("|')|("|')$/, '')
 
-      path = ""
       page = context.environments.first["page"]
 
       #if a post
       if page["id"]
-        #check for Jekyll version
-        if Jekyll::VERSION < '3.0.0'
-          #loop through posts to find match and get slug
-          context.registers[:site].posts.each do |post|
-            if post.id == page["id"]
-              path = "posts/#{post.slug}"
-            end
-          end
-        else
-        #loop through posts to find match and get slug, method calls for Jekyll 3
-          context.registers[:site].posts.docs.each do |post|
-            if post.id == page["id"]
-              path = "posts/#{post.data['slug']}"
-            end
-          end
-        end
+        posts = context.registers[:site].posts
+        path = Jekyll.get_post_path(page["id"], posts)
       else
         path = page["url"]
       end
@@ -79,6 +86,38 @@ module Jekyll
       "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
     end
   end
+
+  class PageAssetPathTag < Liquid::Tag
+    @markup = nil
+
+    def initialize(tag_name, markup, tokens)
+      #strip leading and trailing spaces
+      @markup = markup.strip
+      super
+    end
+
+    def render(context)
+      if @markup.empty?
+        return "Error processing input, expected syntax: {% page_asset_path [page_id] %}"
+      end
+
+      #render the markup
+      rawId = Liquid::Template.parse(@markup).render context
+
+      #strip leading and trailing quotes
+      rawId = rawId.gsub(/^("|')|("|')$/, '')
+
+      id = rawId.strip
+
+      posts = context.registers[:site].posts
+      path = Jekyll.get_post_path(id, posts)
+      path = File.dirname(path) if path =~ /\.\w+$/
+
+      #fix double slashes
+      "#{context.registers[:site].config['baseurl']}/assets/#{path}/".gsub(/\/{2,}/, '/')
+    end
+  end
 end
 
 Liquid::Template.register_tag('asset_path', Jekyll::AssetPathTag)
+Liquid::Template.register_tag('page_asset_path', Jekyll::PageAssetPathTag)
