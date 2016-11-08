@@ -24,9 +24,14 @@ in page my-first-page would output:
 ```
 /assets/my-first-page/my-image.png
 ```
-```{% page_asset_path /2012/05/25/another-post-title document.pdf %}```
+
+```
+{% page_asset_path /2012/05/25/another-post-title document.pdf %}
+```
 would output:
-```/assets/posts/another-post-title/document.pdf```
+```
+/assets/posts/another-post-title/document.pdf
+```
 
 Useful for images and links in Markdown or HTML:
 ```
