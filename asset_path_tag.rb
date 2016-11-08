@@ -2,15 +2,19 @@
 # Author: Sam Rayner http://samrayner.com
 # Description: Output a relative URL for assets based on the post or page
 #
-# Syntax {% asset_path [filename] %}
+# Syntax
+#    {% asset_path [filename] %}
+#    {% page_asset_path [page_id] [filename] %}
 #
 # Examples:
 # {% asset_path kitten.png %} on post 2013-01-01-post-title
 # {% asset_path pirate.mov %} on page page-title
+# {% page_asset_path /2012/05/25/another-post-title document.pdf %}
 #
 # Output:
 # /assets/posts/post-title/kitten.png
 # /assets/page-title/pirate.mov
+# /assets/posts/another-post-title/document.pdf
 #
 # Looping example using a variable for the pathname:
 #
@@ -25,6 +29,17 @@
 # /assets/posts/post-title/image_one.png
 # /assets/posts/post-title/image_two.png
 #
+# Looping example over posts:
+#
+# Site contains posts:
+#   post-title
+#   another-post-title
+#
+# {% for post in site.posts %}{% page_asset_path {{post.id}} cover.jpg %}{% endfor %} on index.html
+#
+# Output:
+# /assets/posts/post-title/cover.jpg
+# /assets/posts/another-post-title/cover.jpg
 
 module Jekyll
 
@@ -98,23 +113,23 @@ module Jekyll
 
     def render(context)
       if @markup.empty?
-        return "Error processing input, expected syntax: {% page_asset_path [page_id] %}"
+        return "Error processing input, expected syntax: {% page_asset_path [page_id] [filename] %}"
       end
 
-      #render the markup
-      rawId = Liquid::Template.parse(@markup).render context
-
-      #strip leading and trailing quotes
-      rawId = rawId.gsub(/^("|')|("|')$/, '')
-
-      id = rawId.strip
-
+      # render the page markup
+      parsed = Liquid::Template.parse(@markup).render context
+      id, filename = parsed.split(' ', 2).each do |param|
+        unquoted = param.gsub(/^("|')|("|')$/, '')
+        unquoted.strip
+      end
+    
       posts = context.registers[:site].posts
       path = Jekyll.get_post_path(id, posts)
       path = File.dirname(path) if path =~ /\.\w+$/
 
+      root = context.registers[:site].config['baseurl']
       #fix double slashes
-      "#{context.registers[:site].config['baseurl']}/assets/#{path}/".gsub(/\/{2,}/, '/')
+      "#{root}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
     end
   end
 end
