@@ -6,6 +6,7 @@ Jekyll Asset Path Tag
 A liquid tag to output a relative URL for assets based on the post or page, allowing you to organise your assets into subdirectories.
 
 Syntax: `{% asset_path [filename] %}`
+`{% page_asset_path [page_id] [filename] %}`
 
 ##Installation
 Copy asset_path_tag.rb into */_plugins* ([Jekyll][j]) or */plugins* ([Octopress][o])
@@ -23,6 +24,9 @@ in page my-first-page would output:
 ```
 /assets/my-first-page/my-image.png
 ```
+```{% page_asset_path /2012/05/25/another-post-title document.pdf %}```
+would output:
+```/assets/posts/another-post-title/document.pdf```
 
 Useful for images and links in Markdown or HTML:
 ```
@@ -46,6 +50,21 @@ then the tag will output:
 ```text
 /assets/posts/another-post-title/image_one.png
 /assets/posts/another-post-title/image_two.png
+```
+
+Tag `page-asset-path` is useful for showing asset from each page. Given the site contains pages:
+```
+post-title
+another-post-title
+```
+then
+```
+{% for post in site.posts %}{% page_asset_path {{post.id}} cover.jpg %}{% endfor %} on index.html
+```
+will output:
+```
+/assets/posts/post-title/cover.jpg
+/assets/posts/another-post-title/cover.jpg
 ```
 
 [j]: http://jekyllrb.com/
