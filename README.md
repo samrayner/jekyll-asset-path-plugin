@@ -5,8 +5,11 @@ Jekyll Asset Path Tag
 
 A liquid tag to output a relative URL for assets based on the post or page, allowing you to organise your assets into subdirectories.
 
-Syntax: `{% asset_path [filename] %}`
-`{% page_asset_path [page_id] [filename] %}`
+Syntax:
+```
+{% asset_path filename [post_id] %}
+{% asset_path "filename with whitespace" [post_id] %}
+```
 
 ##Installation
 Copy asset_path_tag.rb into */_plugins* ([Jekyll][j]) or */plugins* ([Octopress][o])
@@ -26,7 +29,7 @@ in page my-first-page would output:
 ```
 
 ```
-{% page_asset_path /2012/05/25/another-post-title document.pdf %}
+{% asset_path document.pdf /2012/05/25/another-post-title %}
 ```
 would output:
 ```
@@ -57,14 +60,14 @@ then the tag will output:
 /assets/posts/another-post-title/image_two.png
 ```
 
-Tag `page-asset-path` is useful for showing asset from each page. Given the site contains pages:
+When used with `post_id` parameter, the tag is useful for showing asset from each page. Given the site contains pages:
 ```
 post-title
 another-post-title
 ```
 then
 ```
-{% for post in site.posts %}{% page_asset_path {{post.id}} cover.jpg %}{% endfor %} on index.html
+{% for post in site.posts %}{% asset_path cover.jpg {{post.id}} %}{% endfor %} on index.html
 ```
 will output:
 ```
@@ -74,3 +77,12 @@ will output:
 
 [j]: http://jekyllrb.com/
 [o]: http://octopress.org/
+
+##Testing
+The plugin can be tested by using the Jekyll test site in `test_site` directory. Generate the site with
+```
+bundle exec jekyll serve
+```
+then check the test results by browsing to [http://localhost:4000][test_site].
+
+[test_site]: http://localhost:4000

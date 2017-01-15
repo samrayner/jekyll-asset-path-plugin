@@ -1,20 +1,25 @@
 # Title: Asset path tag for Jekyll
-# Author: Sam Rayner http://samrayner.com
+# Authors:
+#     Sam Rayner http://samrayner.com
+#     Otto Urpelainen http://koti.kapsi.fi/oturpe/projects/
+#
 # Description: Output a relative URL for assets based on the post or page
 #
 # Syntax
-#    {% asset_path [filename] %}
-#    {% page_asset_path [page_id] [filename] %}
+#    {% asset_path filename [post_id] %}
+#    {% asset_path "filename with whitespace" [post_id] %}
 #
 # Examples:
 # {% asset_path kitten.png %} on post 2013-01-01-post-title
 # {% asset_path pirate.mov %} on page page-title
-# {% page_asset_path /2012/05/25/another-post-title document.pdf %}
+# {% asset_path document.pdf /2012/05/25/another-post-title %}
+# {% asset_path "document with long name.pdf" /2012/05/25/another-post-title %}
 #
 # Output:
 # /assets/posts/post-title/kitten.png
 # /assets/page-title/pirate.mov
 # /assets/posts/another-post-title/document.pdf
+# /assets/posts/another-post-title/document with long name.pdf
 #
 # Looping example using a variable for the pathname:
 #
@@ -35,7 +40,7 @@
 #   post-title
 #   another-post-title
 #
-# {% for post in site.posts %}{% page_asset_path {{post.id}} cover.jpg %}{% endfor %} on index.html
+# {% for post in site.posts %}{% asset_path cover.jpg {{post.id}} %}{% endfor %} on index.html
 #
 # Output:
 # /assets/posts/post-title/cover.jpg
@@ -75,21 +80,30 @@ module Jekyll
 
     def render(context)
       if @markup.empty?
-        return "Error processing input, expected syntax: {% asset_path [filename] %}"
+        return "Error processing input, expected syntax: {% asset_path filename [post id] %}"
       end
 
       #render the markup
-      rawFilename = Liquid::Template.parse(@markup).render context
+      parameters = Liquid::Template.parse(@markup).render context
+      parameters.strip!
 
-      #strip leading and trailing quotes
-      filename = rawFilename.gsub(/^("|')|("|')$/, '')
+      if ['"', "'"].include? parameters[0] 
+        # Quoted filename, possibly followed by post id
+        last_quote_index = parameters.rindex(parameters[0])
+        filename = parameters[1 ... last_quote_index]
+        post_id = parameters[(last_quote_index + 1) .. -1].strip
+      else
+        # Unquoted filename, possibly followed by post id
+        filename, post_id = parameters.split(/\s+/)
+      end
 
       page = context.environments.first["page"]
 
-      #if a post
-      if page["id"]
+      post_id = page["id"] if post_id == nil or post_id.empty?
+      if post_id
+        #if a post
         posts = context.registers[:site].posts
-        path = Jekyll.get_post_path(page["id"], posts)
+        path = Jekyll.get_post_path(post_id, posts)
       else
         path = page["url"]
       end
@@ -101,38 +115,6 @@ module Jekyll
       "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
     end
   end
-
-  class PageAssetPathTag < Liquid::Tag
-    @markup = nil
-
-    def initialize(tag_name, markup, tokens)
-      #strip leading and trailing spaces
-      @markup = markup.strip
-      super
-    end
-
-    def render(context)
-      if @markup.empty?
-        return "Error processing input, expected syntax: {% page_asset_path [page_id] [filename] %}"
-      end
-
-      # render the page markup
-      parsed = Liquid::Template.parse(@markup).render context
-      id, filename = parsed.split(' ', 2).each do |param|
-        unquoted = param.gsub(/^("|')|("|')$/, '')
-        unquoted.strip
-      end
-    
-      posts = context.registers[:site].posts
-      path = Jekyll.get_post_path(id, posts)
-      path = File.dirname(path) if path =~ /\.\w+$/
-
-      root = context.registers[:site].config['baseurl']
-      #fix double slashes
-      "#{root}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
-    end
-  end
 end
 
 Liquid::Template.register_tag('asset_path', Jekyll::AssetPathTag)
-Liquid::Template.register_tag('page_asset_path', Jekyll::PageAssetPathTag)
