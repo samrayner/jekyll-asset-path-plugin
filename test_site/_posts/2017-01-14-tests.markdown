@@ -1,0 +1,41 @@
+---
+title:  "jekyll-thumbnail-generator tests"
+date:   2017-01-14 10:50:12 +0200
+---
+Page tests.
+
+## This page
+
+### Unquoted: this-page.png
+![Failure]({% asset_path this-page.png %})
+
+### Double quotes: "this-page.png"
+![Failure]({% asset_path "this-page.png" %})
+
+### Single quotes: 'this-page.png'
+![Failure]({% asset_path 'this-page.png' %})
+
+### Quoted with spaces: "this page with space.png"
+![Failure]({% asset_path "this page with space.png" %})
+
+### Single quotes with spaces: 'this page with space.png'
+![Failure]({% asset_path 'this page with space.png' %})
+
+## Other page
+
+### Unquoted: another-page.png /2000/01/02/Another_page
+![Failure]({% asset_path another-page.png /2000/01/02/Another_page %})
+
+### Double quotes: "another-page.png" /2000/01/02/Another_page
+![Failure]({% asset_path "another-page.png" /2000/01/02/Another_page %})
+
+### Single quotes: 'another-page.png' /2000/01/02/Another_page
+![Failure]({% asset_path 'another-page.png' /2000/01/02/Another_page %})
+
+### Double quotes with space: "another page with space.png" /2000/01/02/Another_page
+![Failure]({% asset_path "another page with space.png" /2000/01/02/Another_page %})
+
+### Single quotes with space: 'another page with space.png' /2000/01/02/Another_page
+![Failure]({% asset_path 'another page with space.png' /2000/01/02/Another_page %})
+
+<!-- TODO: More cases needed? -->

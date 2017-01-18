@@ -1,0 +1,1 @@
+../../asset_path_tag.rb
