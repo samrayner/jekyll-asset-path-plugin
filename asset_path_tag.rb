@@ -6,20 +6,20 @@
 # Description: Output a relative URL for assets based on the post or page
 #
 # Syntax
-#    {% asset_path filename [post_id] %}
-#    {% asset_path "filename with whitespace" [post_id] %}
+#    {% asset_path filename post_id %}
+#    {% asset_path "filename with whitespace" post_id %}
 #
 # Examples:
 # {% asset_path kitten.png %} on post 2013-01-01-post-title
 # {% asset_path pirate.mov %} on page page-title
 # {% asset_path document.pdf /2012/05/25/another-post-title %}
-# {% asset_path "document with long name.pdf" /2012/05/25/another-post-title %}
+# {% asset_path "document with spaces in name.pdf" /2012/05/25/another-post-title %}
 #
 # Output:
 # /assets/posts/post-title/kitten.png
 # /assets/page-title/pirate.mov
 # /assets/posts/another-post-title/document.pdf
-# /assets/posts/another-post-title/document with long name.pdf
+# /assets/posts/another-post-title/document with spaces in name.pdf
 #
 # Looping example using a variable for the pathname:
 #
@@ -80,7 +80,7 @@ module Jekyll
 
     def render(context)
       if @markup.empty?
-        return "Error processing input, expected syntax: {% asset_path filename [post id] %}"
+        return "Error processing input, expected syntax: {% asset_path filename post_id %}"
       end
 
       #render the markup

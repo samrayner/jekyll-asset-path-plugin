@@ -7,8 +7,8 @@ A liquid tag to output a relative URL for assets based on the post or page, allo
 
 Syntax:
 ```
-{% asset_path filename [post_id] %}
-{% asset_path "filename with whitespace" [post_id] %}
+{% asset_path filename post_id %}
+{% asset_path "filename with whitespace" post_id %}
 ```
 
 ##Installation
@@ -67,9 +67,9 @@ another-post-title
 ```
 then
 ```
-{% for post in site.posts %}{% asset_path cover.jpg {{post.id}} %}{% endfor %} on index.html
+{% for post in site.posts %}{% asset_path cover.jpg {{post.id}} %}{% endfor %}
 ```
-will output:
+on index.html will output:
 ```
 /assets/posts/post-title/cover.jpg
 /assets/posts/another-post-title/cover.jpg
