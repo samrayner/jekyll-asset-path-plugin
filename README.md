@@ -11,10 +11,10 @@ Syntax:
 {% asset_path "filename with whitespace" post_id %}
 ```
 
-##Installation
+## Installation
 Copy asset_path_tag.rb into */_plugins* ([Jekyll][j]) or */plugins* ([Octopress][o])
 
-##Examples
+## Examples
 
 ```
 {% asset_path my-image.png %}
@@ -78,7 +78,7 @@ on index.html will output:
 [j]: http://jekyllrb.com/
 [o]: http://octopress.org/
 
-##Testing
+## Testing
 The plugin can be tested by using the Jekyll test site in `test_site` directory. Generate the site with
 ```
 bundle exec jekyll serve
