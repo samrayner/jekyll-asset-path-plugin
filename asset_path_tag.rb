@@ -69,6 +69,27 @@ module Jekyll
     return ""
   end
 
+  class AssetPathTools
+    def self.resolve(context, filename, post_id=nil)
+      page = context.environments.first["page"]
+
+      post_id = page["id"] if post_id == nil or post_id.empty?
+      if post_id
+        #if a post
+        posts = context.registers[:site].posts
+        path = Jekyll.get_post_path(post_id, posts)
+      else
+        path = page["url"]
+      end
+
+      #strip filename
+      path = File.dirname(path) if path =~ /\.\w+$/
+
+      #fix double slashes
+      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
+    end
+  end
+
   class AssetPathTag < Liquid::Tag
     @markup = nil
 
@@ -97,22 +118,7 @@ module Jekyll
         filename, post_id = parameters.split(/\s+/)
       end
 
-      page = context.environments.first["page"]
-
-      post_id = page["id"] if post_id == nil or post_id.empty?
-      if post_id
-        #if a post
-        posts = context.registers[:site].posts
-        path = Jekyll.get_post_path(post_id, posts)
-      else
-        path = page["url"]
-      end
-
-      #strip filename
-      path = File.dirname(path) if path =~ /\.\w+$/
-
-      #fix double slashes
-      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
+      AssetPathTools.resolve(context, filename, post_id)
     end
   end
 end
