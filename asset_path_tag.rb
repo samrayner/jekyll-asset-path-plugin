@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop: disable Metrics/LineLength
+
 # Title: Asset path tag for Jekyll
 # Authors:
 #     Sam Rayner http://samrayner.com
@@ -47,6 +49,8 @@
 # Output:
 # /assets/posts/post-title/cover.jpg
 # /assets/posts/another-post-title/cover.jpg
+
+# rubocop: enable Metrics/LineLength
 
 module Jekyll
   def self.get_post_path(page_id, posts)
