@@ -52,6 +52,7 @@
 
 # rubocop: enable Metrics/LineLength
 
+# Jekyll plugin.
 module Jekyll
   def self.get_post_path(page_id, posts)
     # check for Jekyll version
@@ -70,6 +71,7 @@ module Jekyll
     ''
   end
 
+  # Returns the path to the specified asset.
   class AssetPathTag < Liquid::Tag
     @markup = nil
 
