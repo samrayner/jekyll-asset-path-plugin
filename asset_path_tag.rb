@@ -87,16 +87,7 @@ module Jekyll
 
       # render the markup
       filename, post_id = parse_parameters context
-      page = context.environments.first['page']
-
-      post_id = page['id'] if post_id.nil? || post_id.empty?
-      if post_id
-        # if a post
-        posts = context.registers[:site].posts
-        path = Jekyll.get_post_path(post_id, posts)
-      else
-        path = page['url']
-      end
+      path = post_path context, post_id
 
       # strip filename
       path = File.dirname(path) if path =~ /\.\w+$/
@@ -121,6 +112,19 @@ module Jekyll
       end
       # Unquoted filename, possibly followed by post id
       parameters.split(/\s+/)
+    end
+
+    def post_path(context, post_id)
+      page = context.environments.first['page']
+
+      post_id = page['id'] if post_id.nil? || post_id.empty?
+      if post_id
+        # if a post
+        posts = context.registers[:site].posts
+        Jekyll.get_post_path(post_id, posts)
+      else
+        page['url']
+      end
     end
   end
 end
