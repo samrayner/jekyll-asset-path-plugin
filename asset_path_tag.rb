@@ -85,19 +85,7 @@ module Jekyll
       end
 
       # render the markup
-      parameters = Liquid::Template.parse(@markup).render context
-      parameters.strip!
-
-      if ['"', "'"].include? parameters[0]
-        # Quoted filename, possibly followed by post id
-        last_quote_index = parameters.rindex(parameters[0])
-        filename = parameters[1...last_quote_index]
-        post_id = parameters[(last_quote_index + 1)..-1].strip
-      else
-        # Unquoted filename, possibly followed by post id
-        filename, post_id = parameters.split(/\s+/)
-      end
-
+      filename, post_id = parse_parameters context
       page = context.environments.first['page']
 
       post_id = page['id'] if post_id.nil? || post_id.empty?
@@ -114,6 +102,23 @@ module Jekyll
 
       # fix double slashes
       "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(%r{/{2,}}, '/')
+    end
+
+    private
+
+    def parse_parameters(context)
+      parameters = Liquid::Template.parse(@markup).render context
+      parameters.strip!
+
+      if ['"', "'"].include? parameters[0]
+        # Quoted filename, possibly followed by post id
+        last_quote_index = parameters.rindex(parameters[0])
+        filename = parameters[1...last_quote_index]
+        post_id = parameters[(last_quote_index + 1)..-1].strip
+        return filename, post_id
+      end
+      # Unquoted filename, possibly followed by post id
+      parameters.split(/\s+/)
     end
   end
 end
