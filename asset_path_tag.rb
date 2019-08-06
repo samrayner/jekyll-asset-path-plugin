@@ -81,7 +81,8 @@ module Jekyll
 
     def render(context)
       if @markup.empty?
-        return 'Error processing input, expected syntax: {% asset_path filename post_id %}'
+        return 'Error processing input, expected syntax: ' \
+               '{% asset_path filename post_id %}'
       end
 
       # render the markup
@@ -101,7 +102,8 @@ module Jekyll
       path = File.dirname(path) if path =~ /\.\w+$/
 
       # fix double slashes
-      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(%r{/{2,}}, '/')
+      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}"
+        .gsub(%r{/{2,}}, '/')
     end
 
     private
