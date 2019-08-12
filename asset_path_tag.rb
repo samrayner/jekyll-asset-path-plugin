@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# rubocop: disable Metrics/LineLength
+
 # Title: Asset path tag for Jekyll
 # Authors:
 #     Sam Rayner http://samrayner.com
@@ -46,73 +50,83 @@
 # /assets/posts/post-title/cover.jpg
 # /assets/posts/another-post-title/cover.jpg
 
-module Jekyll
+# rubocop: enable Metrics/LineLength
 
+# Jekyll plugin.
+module Jekyll
   def self.get_post_path(page_id, posts)
-    #check for Jekyll version
+    # check for Jekyll version
     if Jekyll::VERSION < '3.0.0'
-      #loop through posts to find match and get slug
+      # loop through posts to find match and get slug
       posts.each do |post|
-        if post.id == page_id
-          return "posts/#{post.slug}"
-        end
+        return "posts/#{post.slug}" if post.id == page_id
       end
     else
-      #loop through posts to find match and get slug, method calls for Jekyll 3
+      # loop through posts to find match and get slug, method calls for Jekyll 3
       posts.docs.each do |post|
-        if post.id == page_id
-          return "posts/#{post.data['slug']}"
-        end
+        return "posts/#{post.data['slug']}" if post.id == page_id
       end
     end
 
-    return ""
+    ''
   end
 
+  # Returns the path to the specified asset.
   class AssetPathTag < Liquid::Tag
     @markup = nil
 
     def initialize(tag_name, markup, tokens)
-      #strip leading and trailing spaces
+      # strip leading and trailing spaces
       @markup = markup.strip
       super
     end
 
     def render(context)
       if @markup.empty?
-        return "Error processing input, expected syntax: {% asset_path filename post_id %}"
+        return 'Error processing input, expected syntax: ' \
+               '{% asset_path filename post_id %}'
       end
 
-      #render the markup
+      # render the markup
+      filename, post_id = parse_parameters context
+      path = post_path context, post_id
+
+      # strip filename
+      path = File.dirname(path) if path =~ /\.\w+$/
+
+      # fix double slashes
+      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}"
+        .gsub(%r{/{2,}}, '/')
+    end
+
+    private
+
+    def parse_parameters(context)
       parameters = Liquid::Template.parse(@markup).render context
       parameters.strip!
 
-      if ['"', "'"].include? parameters[0] 
+      if ['"', "'"].include? parameters[0]
         # Quoted filename, possibly followed by post id
         last_quote_index = parameters.rindex(parameters[0])
-        filename = parameters[1 ... last_quote_index]
-        post_id = parameters[(last_quote_index + 1) .. -1].strip
-      else
-        # Unquoted filename, possibly followed by post id
-        filename, post_id = parameters.split(/\s+/)
+        filename = parameters[1...last_quote_index]
+        post_id = parameters[(last_quote_index + 1)..-1].strip
+        return filename, post_id
       end
+      # Unquoted filename, possibly followed by post id
+      parameters.split(/\s+/)
+    end
 
-      page = context.environments.first["page"]
+    def post_path(context, post_id)
+      page = context.environments.first['page']
 
-      post_id = page["id"] if post_id == nil or post_id.empty?
+      post_id = page['id'] if post_id.nil? || post_id.empty?
       if post_id
-        #if a post
+        # if a post
         posts = context.registers[:site].posts
-        path = Jekyll.get_post_path(post_id, posts)
+        Jekyll.get_post_path(post_id, posts)
       else
-        path = page["url"]
+        page['url']
       end
-
-      #strip filename
-      path = File.dirname(path) if path =~ /\.\w+$/
-
-      #fix double slashes
-      "#{context.registers[:site].config['baseurl']}/assets/#{path}/#{filename}".gsub(/\/{2,}/, '/')
     end
   end
 end
