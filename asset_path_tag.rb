@@ -120,7 +120,7 @@ module Jekyll
       post_id = page['id'] if post_id.nil? || post_id.empty?
       if post_id
         # Posts as well as documents in other collections have a post_id
-        collections = context.registers[:site].collections.map { |register_collection| register_collection[1] }
+        collections = context.registers[:site].collections.map { |c| c[1] }
         Jekyll.get_post_path(post_id, collections)
       else
         page['url']
