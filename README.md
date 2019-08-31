@@ -36,6 +36,14 @@ would output:
 /assets/posts/another-post-title/document.pdf
 ```
 
+```
+{% asset_path image.jpg /my_collection/document_in_collection %}
+```
+would output:
+```
+/assets/my_collection/document_in_collection/image.jpg
+```
+
 Useful for images and links in Markdown or HTML:
 ```
 [Download script]({% asset_path my-script.js %})

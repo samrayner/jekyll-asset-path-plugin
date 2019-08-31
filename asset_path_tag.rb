@@ -18,12 +18,14 @@
 # {% asset_path pirate.mov %} on page page-title
 # {% asset_path document.pdf /2012/05/25/another-post-title %}
 # {% asset_path "document with spaces in name.pdf" /2012/05/25/another-post-title %}
+# {% asset_path image.jpg /my_collection/document_in_collection %}
 #
 # Output:
 # /assets/posts/post-title/kitten.png
 # /assets/page-title/pirate.mov
 # /assets/posts/another-post-title/document.pdf
 # /assets/posts/another-post-title/document with spaces in name.pdf
+# /assets/my_collection/document_in_collection/image.jpg
 #
 # Looping example using a variable for the pathname:
 #
@@ -54,17 +56,13 @@
 
 # Jekyll plugin.
 module Jekyll
-  def self.get_post_path(page_id, posts)
-    # check for Jekyll version
-    if Jekyll::VERSION < '3.0.0'
-      # loop through posts to find match and get slug
-      posts.each do |post|
-        return "posts/#{post.slug}" if post.id == page_id
-      end
-    else
-      # loop through posts to find match and get slug, method calls for Jekyll 3
-      posts.docs.each do |post|
-        return "posts/#{post.data['slug']}" if post.id == page_id
+  def self.get_post_path(page_id, collections)
+    #loop through all collections to find the matching document and get its slug
+    collections.each do |collection|
+      doc = collection.docs.find { |doc| doc.id == page_id }
+      if doc != nil
+        slug = Jekyll::VERSION  >= '3.0.0' ? doc.data["slug"] : doc.slug
+        return "#{collection.label}/#{slug}"
       end
     end
 
@@ -121,9 +119,9 @@ module Jekyll
 
       post_id = page['id'] if post_id.nil? || post_id.empty?
       if post_id
-        # if a post
-        posts = context.registers[:site].posts
-        Jekyll.get_post_path(post_id, posts)
+        # Posts as well as documents in other collections have a post_id
+        collections = context.registers[:site].collections.map { |register_collection| register_collection[1] }
+        Jekyll.get_post_path(post_id, collections)
       else
         page['url']
       end
