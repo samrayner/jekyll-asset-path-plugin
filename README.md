@@ -7,14 +7,18 @@ A liquid tag to output a relative URL for assets based on the post or page, allo
 
 Syntax:
 ```
+{% asset_path filename %}
 {% asset_path filename post_id %}
 {% asset_path "filename with whitespace" post_id %}
+{% asset_path filename /collection_label/post_id %}
 ```
 
 ## Installation
 Copy asset_path_tag.rb into */_plugins* ([Jekyll][j]) or */plugins* ([Octopress][o])
 
 ## Examples
+
+### Asset of this post
 
 ```
 {% asset_path my-image.png %}
@@ -28,6 +32,8 @@ in page my-first-page would output:
 /assets/my-first-page/my-image.png
 ```
 
+### Asset of another post
+
 ```
 {% asset_path document.pdf /2012/05/25/another-post-title %}
 ```
@@ -35,6 +41,18 @@ would output:
 ```
 /assets/posts/another-post-title/document.pdf
 ```
+
+### Asset of document in a collection
+
+```
+{% asset_path image.jpg /my_collection/document_in_collection %}
+```
+would output:
+```
+/assets/my_collection/document_in_collection/image.jpg
+```
+
+## Uses
 
 Useful for images and links in Markdown or HTML:
 ```
