@@ -40,19 +40,17 @@ Test collection document.
 
 ## Document in another collection
 
-### Unquoted: another.png Another another_collection
+### Unquoted: another.png  /another_collection/Another
 ![Failure]({% asset_path another.png /another_collection/Another %})
 
-### Double quotes: "another.png" Another another_collection
+### Double quotes: "another.png" /another_collection/Another
 ![Failure]({% asset_path "another.png" /another_collection/Another %})
 
-### Single quotes: 'another.png' Another another_collection
+### Single quotes: 'another.png' /another_collection/Another
 ![Failure]({% asset_path 'another.png' /another_collection/Another %})
 
-### Double quotes with space: "another with space.png" Another another_collection
+### Double quotes with space: "another with space.png" /another_collection/Another
 ![Failure]({% asset_path "another with space.png" /another_collection/Another %})
 
-### Single quotes with space: 'another with space.png' Another another_collection
+### Single quotes with space: 'another with space.png' /another_collection/Another
 ![Failure]({% asset_path 'another with space.png' /another_collection/Another %})
-
-<!-- TODO: More cases needed? -->
